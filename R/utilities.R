@@ -470,6 +470,7 @@ add_mh_flank <- function(result_rel, len) {
         while(cc[1] == 0 || cc[length(cc)] == 0) {
             if (cc[1] == 0) n1 <- n1 + 1
             if (cc[length(cc)] == 0) n2 <- n2 + 1
+            if (length(aa) / 2 - n1 < 0 || length(aa)/2 + n2 > length(aa)) break
             cc <- aa[(length(aa) / 2 - n1): (length(aa)/2 + n2)]
         }
         seq_df <- seq_df[, (length(aa) / 2 - n1 + 1): (length(aa)/2 + n2)]
