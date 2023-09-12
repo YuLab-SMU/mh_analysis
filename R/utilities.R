@@ -296,8 +296,8 @@ get_seq <- function(result_rel, len, BSgenome_host, BSgenome_virus) {
     for (i in 1:nrow(result_rel)) {
         result_rel$start_hpv[i] <- max(1, result_rel$start_hpv[i])
         result_rel$start_hpv40[i] <- max(1, result_rel$start_hpv40[i])
-        result_rel$end_hpv[i] <- min(7905, result_rel$start_hpv[i])
-        result_rel$end_hpv40[i] <- min(7905, result_rel$start_hpv40[i])
+        result_rel$end_hpv[i] <- min(7905, result_rel$end_hpv[i])
+        result_rel$end_hpv40[i] <- min(7905, result_rel$end_hpv40[i])
     }
 
 
@@ -470,10 +470,16 @@ add_mh_flank <- function(result_rel, len) {
         while(cc[1] == 0 || cc[length(cc)] == 0) {
             if (cc[1] == 0) n1 <- n1 + 1
             if (cc[length(cc)] == 0) n2 <- n2 + 1
-            if (length(aa) / 2 - n1 < 0 || length(aa)/2 + n2 > length(aa)) break
+            if (length(aa) / 2 - n1 < 0 || length(aa)/2 + n2 > length(aa)) {
+                break
+            }
+            n11 <- max(1, (length(aa) / 2 - n1 + 1))
+            n22 <- min(ncol(seq_df), (length(aa)/2 + n2))
             cc <- aa[(length(aa) / 2 - n1): (length(aa)/2 + n2)]
         }
-        seq_df <- seq_df[, (length(aa) / 2 - n1 + 1): (length(aa)/2 + n2)]
+        n11 <- max(1, (length(aa) / 2 - n1 + 1))
+        n22 <- min(ncol(seq_df), (length(aa)/2 + n2))
+        seq_df <- seq_df[, n11:n22]
         result_rel$mh[i] <- get_mh(seq_df)
     }
     return(result_rel)
