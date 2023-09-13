@@ -351,7 +351,7 @@ get_seq <- function(result_rel, len, BSgenome_host, BSgenome_virus) {
 #'                      virus= c("C", "A", "T", "T", "A", "T", "A", "C"))
 #' seq_df <- t(seq_df) |> as.data.frame()
 #' get_mh(seq_df)
-get_mh <- function(seq_df) {
+get_mh <- function(seq_df, unite = TRUE) {
     seqs <- c(1,2,3,4,5)
     names(seqs) <- c("A", "T", "G", "C", "N")
     for (i in seq_len(ncol(seq_df))) {
@@ -370,8 +370,13 @@ get_mh <- function(seq_df) {
     # 将0的左右两边都是非零的当作一坨
     # 将连续的多个0替换成一个0，就可以得到坨数
     cc <- paste(bb, collapse = "")
-    cc <- gsub("[0]+", "0", cc)
-    mh <- str_count(cc, "0") + sum(bb == 0)
+    if (unite) {
+        cc <- strsplit(cc, split = "[1-9]+") |> unlist() |> nchar()
+        mh <- cc[cc > 0] + 1
+    } else {
+        cc <- gsub("[0]+", "0", cc)
+        mh <- str_count(cc, "0") + sum(bb == 0)
+    }   
     mh
 }
 
