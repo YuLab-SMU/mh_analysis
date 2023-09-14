@@ -4,12 +4,14 @@
 \alias{add_mh_flank}
 \title{get mh value in flank region of SurVirus result (result of get_seq())}
 \usage{
-add_mh_flank(result_rel, len)
+add_mh_flank(result_rel, len, unite = TRUE)
 }
 \arguments{
 \item{result_rel}{SurVirus result (result of get_seq())}
 
 \item{len}{flanking region size}
+
+\item{unite}{If TRUE, calculate the lengths of each microsome separately, otherwise calculate the sum of microsome lengths}
 }
 \value{
 dataframe

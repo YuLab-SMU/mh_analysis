@@ -4,10 +4,12 @@
 \alias{add_mh}
 \title{add mh value to SurVirus result (result of get_seq())}
 \usage{
-add_mh(result_rel)
+add_mh(result_rel, unite = TRUE)
 }
 \arguments{
 \item{result_rel}{SurVirus result (result of get_seq())}
+
+\item{unite}{If TRUE, calculate the lengths of each microsome separately, otherwise calculate the sum of microsome lengths}
 }
 \value{
 dataframe

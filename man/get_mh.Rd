@@ -4,11 +4,13 @@
 \alias{get_mh}
 \title{Get microhomology(mh) length}
 \usage{
-get_mh(seq_df)
+get_mh(seq_df, unite = TRUE)
 }
 \arguments{
 \item{seq_df}{a dataframe of three rows, each containing the host sequence,
 integration sequence, and virus sequence}
+
+\item{unite}{If TRUE, calculate the lengths of each microsome separately, otherwise calculate the sum of microsome lengths}
 }
 \value{
 a numeric of mh length

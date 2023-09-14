@@ -339,6 +339,7 @@ get_seq <- function(result_rel, len, BSgenome_host, BSgenome_virus) {
 #'
 #' @param seq_df a dataframe of three rows, each containing the host sequence,
 #' integration sequence, and virus sequence
+#' @param unite If TRUE, calculate the lengths of each microsome separately, otherwise calculate the sum of microsome lengths
 #'
 #' @importFrom stringr str_count
 #'
@@ -386,6 +387,7 @@ get_mh <- function(seq_df, unite = TRUE) {
 #' add mh value to SurVirus result (result of get_seq())
 #'
 #' @param result_rel SurVirus result (result of get_seq())
+#' @param unite If TRUE, calculate the lengths of each microsome separately, otherwise calculate the sum of microsome lengths
 #' @return dataframe
 #' @export
 #'
@@ -404,7 +406,7 @@ get_mh <- function(seq_df, unite = TRUE) {
 #' result_rel <- get_seq(result_rel)
 #' result_rel <- add_mh(result_rel)
 #' }
-add_mh <- function(result_rel) {
+add_mh <- function(result_rel, unite = TRUE) {
     mh <- rep(0, nrow(result_rel))
     for (i in seq_len(length(mh))) {
         seq_host <- result_rel[i, "seq_host40"]
@@ -414,7 +416,7 @@ add_mh <- function(result_rel) {
         seq_df <- strsplit(c(seq_host, seq_integration, seq_hpv), "")
         seq_df <- do.call(rbind, seq_df) |> as.data.frame()
         
-        mh[i] <- get_mh(seq_df)
+        mh[i] <- get_mh(seq_df, unite = unite)
     }
     result_rel$mh <- mh
     return(result_rel)
@@ -425,8 +427,8 @@ add_mh <- function(result_rel) {
 #' get mh value in flank region of SurVirus result (result of get_seq())
 #'
 #' @param result_rel SurVirus result (result of get_seq())
-#'
 #' @param len flanking region size
+#' @param unite If TRUE, calculate the lengths of each microsome separately, otherwise calculate the sum of microsome lengths
 #'
 #' @return dataframe
 #' @export
@@ -446,7 +448,7 @@ add_mh <- function(result_rel) {
 #' result_rel <- get_seq(result_rel)
 #' result_rel <- add_mh_flank(result_rel, len = 5)
 #' }
-add_mh_flank <- function(result_rel, len) {
+add_mh_flank <- function(result_rel, len, unite = TRUE) {
     result_rel$mh <- rep(0, nrow(result_rel))
     for (i in seq_len(nrow(result_rel))) {
         n1 <- n2 <-  len
@@ -487,7 +489,7 @@ add_mh_flank <- function(result_rel, len) {
         n11 <- max(1, (length(aa) / 2 - n1 + 1))
         n22 <- min(ncol(seq_df), (length(aa)/2 + n2))
         seq_df <- seq_df[, n11:n22]
-        result_rel$mh[i] <- get_mh(seq_df)
+        result_rel$mh[i] <- get_mh(seq_df, unite = unite)
     }
     return(result_rel)
 }
