@@ -373,6 +373,8 @@ get_mh <- function(seq_df, unite = TRUE) {
     if (unite) {
         cc <- strsplit(cc, split = "[1-9]+") |> unlist() |> nchar()
         mh <- cc[cc > 0] + 1
+        mh <- paste(mh, collapse = "_")
+        
     } else {
         cc <- gsub("[0]+", "0", cc)
         mh <- str_count(cc, "0") + sum(bb == 0)
