@@ -1,36 +1,30 @@
 ---
-output: github_document
+title: "mhAnalysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{MPO_vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
+  comment = "#>"
 )
 ```
 
 
-# mhAnalysis
 
-<!-- badges: start -->
-<!-- badges: end -->
-microhomology analysis of SurVirus result
-
-## :writing_hand: Authors
-Erqiang Hu: Department of Bioinformatics, School of Basic Medical Sciences, Southern
-Medical University.
+## Authors
+Erqiang Hu: Department of Bioinformatics, School of Basic Medical
+Sciences, Southern Medical University.
 
 Shanye Yin： Albert Einstein College of Medicine
 
 
-## :arrow\_double\_down: Installation
-
-``` r
-devtools::install_github("huerqiang/mhAnalysis")
+```{r setup}
+library(mhAnalysis)
 ```
 
 ## Introduction
@@ -119,5 +113,6 @@ result_rel <- add_mh_flank(result_rel, len = 5)
 ```{r}
 sessionInfo()
 ```
+
 
 

@@ -20,3 +20,122 @@ Shanye Yin： Albert Einstein College of Medicine
 ``` r
 devtools::install_github("huerqiang/mhAnalysis")
 ```
+
+## Introduction
+
+A significant proportion of human cancers result from the integration of
+viruses into the human genome. Therefore, investigating the mechanisms
+of viral integration is crucial for understanding the underlying
+mechanisms of many devastating diseases. Microhomology (MH) analysis at
+viral integration sites plays a critical role in the study of viral
+integration mechanisms. Previous research has shown a significant
+enrichment of microhomology (MH) between the human genome and the human
+papillomavirus (HPV) genome at integration breakpoints or nearby
+regions. To facilitate MH analysis, we have developed the mhAnalysis
+software package. The following sections provide an overview of the
+principles and usage of mhAnalysis.
+
+### (1) Integration sites Information:
+
+SurVirus is an excellent software tool for analyzing viral integration
+sites with low false-positive and false-negative rates, providing
+researchers with reliable data. Therefore, mhAnalysis performs
+microhomology analysis by integrating with the results obtained from
+SurVirus.
+
+### (2)Obtaining Integrated Sequences and Host-Virus Sequences at Integration sites:
+
+In MH analysis, it is essential to obtain the integrated sequences, host
+sequences, and viral sequences at the integration sites. The retrieval
+of integrated sequences depends on the coordinates of the host and viral
+integration sites as well as their positive and negative strands.
+However, in some cases, SurVirus results may misidentify positive and
+negative strands. For example, if one integrated sequence has read1
+recognizing the host’s positive strand and read2 recognizing the virus’s
+negative strand, SurVirus might incorrectly conclude that the host’s
+positive strand integrated with the virus’s negative strand when, in
+reality, the host’s positive strand integrated with the virus’s positive
+strand. To address this, we provide the add_strand() function to add
+accurate positive and negative strand information to the integrated
+sequences. This function first employs the internal get_r() function to
+identify which end each sequence belongs to and then selects single-end
+sequences that match both the virus and the host, using this information
+to determine the positive and negative strands for the virus and host.
+
+When there is MH at the insertion sites, SurVirus results may suffer
+from misalignment issues. The misalignment length corresponds to the
+microhomology length at the insertion site. To rectify this and avoid
+complications in microhomology length statistics, we offer the
+get_real_loc() function, which identifies the genuine integration
+coordinates.
+
+### (3)Analyzing MH Within Given Flanking Regions:
+
+We provide the add_mh_flank() function to append MH length information
+within specified flanking regions to the SurVirus results. The process
+involves using the get_seq() function to add host sequence and virus
+sequence information within the defined flanking regions. These two
+sequences are combined to create the integrated sequence data.
+Subsequently, the virus sequence, host sequence, and integrated sequence
+are used as inputs to compute MH lengths using the get_mh function. The
+microhomology information is then incorporated into the SurVirus
+results. In conclusion, we have developed the mhAnalysis package to
+collaborate with the SurVirus software, particularly for MH analysis.
+Through mhAnalysis, we can accurately address MH issues at insertion
+sites, ensuring the accuracy and reliability of insertion site data. The
+introduction of this tool not only facilitates in-depth virology
+research but also provides powerful analytical tools in the field of
+bioinformatics to support the exploration of disease mechanisms and
+biological interactions.
+
+## :hammer: Installation
+
+``` r
+devtools::install_github("huerqiang/mhAnalysis")
+```
+
+## Example
+
+``` r
+SurVirus_dir <- "SurVirus_result"
+bam_dir <- "SurVirus_result/readsx"
+
+result_t1 <- fread(file.path(SurVirus_dir, "results.t1.txt"), sep = " ", header = FALSE, fill = TRUE)
+results <- fread(file.path(SurVirus_dir, "results.txt"), sep = " ", header = FALSE, fill = TRUE)
+class(results) <- class(result_t1) <- "data.frame"
+rownames(results) <- paste("ID", results[, 1], sep = "=")
+results <- results[result_t1[, 1], ]
+result_rel <- add_strand(results)
+result_rel <- get_real_loc(result_rel)
+result_rel <- get_seq(result_rel)
+result_rel <- add_mh_flank(result_rel, len = 5)
+```
+
+``` r
+sessionInfo()
+#> R version 4.3.1 (2023-06-16 ucrt)
+#> Platform: x86_64-w64-mingw32/x64 (64-bit)
+#> Running under: Windows 11 x64 (build 22621)
+#> 
+#> Matrix products: default
+#> 
+#> 
+#> locale:
+#> [1] LC_COLLATE=Chinese (Simplified)_China.utf8 
+#> [2] LC_CTYPE=Chinese (Simplified)_China.utf8   
+#> [3] LC_MONETARY=Chinese (Simplified)_China.utf8
+#> [4] LC_NUMERIC=C                               
+#> [5] LC_TIME=Chinese (Simplified)_China.utf8    
+#> 
+#> time zone: Asia/Shanghai
+#> tzcode source: internal
+#> 
+#> attached base packages:
+#> [1] stats     graphics  grDevices utils     datasets  methods   base     
+#> 
+#> loaded via a namespace (and not attached):
+#>  [1] compiler_4.3.1    fastmap_1.1.1     cli_3.6.1         tools_4.3.1      
+#>  [5] htmltools_0.5.5   rstudioapi_0.15.0 yaml_2.3.7        rmarkdown_2.25   
+#>  [9] knitr_1.44        xfun_0.39         digest_0.6.33     rlang_1.1.1      
+#> [13] evaluate_0.21
+```

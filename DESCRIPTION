@@ -18,3 +18,7 @@ Imports:
     stringr,
     GenomicAlignments,
     stats
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
