@@ -9,7 +9,8 @@ add_mh(result_rel, unite = TRUE)
 \arguments{
 \item{result_rel}{SurVirus result (result of get_seq())}
 
-\item{unite}{If TRUE, calculate the lengths of each microsome separately, otherwise calculate the sum of microsome lengths}
+\item{unite}{If TRUE, calculate the lengths of each microsome separately, 
+otherwise calculate the sum of microsome lengths}
 }
 \value{
 dataframe
@@ -18,18 +19,19 @@ dataframe
 add mh value to SurVirus result (result of get_seq())
 }
 \examples{
-\dontrun{
-SurVirus_dir <- "SurVirus_result"
-bam_dir <- "SurVirus_result/readsx"
+data(BSgenomehpv16)
+SurVirus_dir <- system.file(file.path("extdata", "survirus_result"), 
+    package = "mhAnalysis")
+bam_dir <- file.path(SurVirus_dir, "readsx")
 
-result_t1 <- fread(file.path(SurVirus_dir, "results.t1.txt"), sep = " ", header = FALSE, fill = TRUE)
-results <- fread(file.path(SurVirus_dir, "results.txt"), sep = " ", header = FALSE, fill = TRUE)
-class(results) <- class(result_t1) <- "data.frame"
+result_t1 <- read.table(file.path(SurVirus_dir, "results.t1.txt"), sep = " ", header = FALSE, fill = TRUE)
+results <- read.table(file.path(SurVirus_dir, "results.txt"), sep = " ", header = FALSE, fill = TRUE)
 rownames(results) <- paste("ID", results[, 1], sep = "=")
 results <- results[result_t1[, 1], ]
-result_rel <- add_strand(results)
-result_rel <- get_real_loc(result_rel)
-result_rel <- get_seq(result_rel)
+result_rel <- add_strand(results, bam_dir, result_t1)
+result_rel <- get_real_loc(result_rel, BSgenome_host=BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38, 
+    BSgenome_virus=BSgenomehpv16)
+result_rel <- get_seq(result_rel, len = 10, BSgenome_host=BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38, 
+    BSgenome_virus=BSgenomehpv16)
 result_rel <- add_mh(result_rel)
-}
 }

@@ -2,7 +2,8 @@
 #'
 #' @param seq_df a dataframe of three rows, each containing the host sequence,
 #' integration sequence, and virus sequence
-#' @param unite If TRUE, calculate the lengths of each microsome separately, otherwise calculate the sum of microsome lengths
+#' @param unite If TRUE, calculate the lengths of each microsome separately, 
+#' otherwise calculate the sum of microsome lengths
 #'
 #' @importFrom stringr str_count
 #'
@@ -50,32 +51,33 @@ get_mh <- function(seq_df, unite = TRUE) {
 #' add mh value to SurVirus result (result of get_seq())
 #'
 #' @param result_rel SurVirus result (result of get_seq())
-#' @param unite If TRUE, calculate the lengths of each microsome separately, otherwise calculate the sum of microsome lengths
+#' @param unite If TRUE, calculate the lengths of each microsome separately, 
+#' otherwise calculate the sum of microsome lengths
 #' @return dataframe
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' SurVirus_dir <- "SurVirus_result"
-#' bam_dir <- "SurVirus_result/readsx"
+#' data(BSgenomehpv16)
+#' SurVirus_dir <- system.file(file.path("extdata", "survirus_result"), 
+#'     package = "mhAnalysis")
+#' bam_dir <- file.path(SurVirus_dir, "readsx")
 #'
-#' result_t1 <- fread(file.path(SurVirus_dir, "results.t1.txt"), sep = " ", header = FALSE, fill = TRUE)
-#' results <- fread(file.path(SurVirus_dir, "results.txt"), sep = " ", header = FALSE, fill = TRUE)
-#' class(results) <- class(result_t1) <- "data.frame"
+#' result_t1 <- read.table(file.path(SurVirus_dir, "results.t1.txt"), sep = " ", header = FALSE, fill = TRUE)
+#' results <- read.table(file.path(SurVirus_dir, "results.txt"), sep = " ", header = FALSE, fill = TRUE)
 #' rownames(results) <- paste("ID", results[, 1], sep = "=")
 #' results <- results[result_t1[, 1], ]
-#' result_rel <- add_strand(results)
-#' result_rel <- get_real_loc(result_rel)
-#' result_rel <- get_seq(result_rel)
+#' result_rel <- add_strand(results, bam_dir, result_t1)
+#' result_rel <- get_real_loc(result_rel, BSgenome_host=BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38, 
+#'     BSgenome_virus=BSgenomehpv16)
+#' result_rel <- get_seq(result_rel, len = 10, BSgenome_host=BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38, 
+#'     BSgenome_virus=BSgenomehpv16)
 #' result_rel <- add_mh(result_rel)
-#' }
 add_mh <- function(result_rel, unite = TRUE) {
     mh <- rep(0, nrow(result_rel))
     for (i in seq_len(length(mh))) {
         seq_host <- result_rel[i, "seq_host40"]
         seq_hpv <- result_rel[i, "seq_hpv40"]
         seq_integration <- paste0(result_rel[i, "seq_host"], result_rel[i, "seq_hpv"])
-        # seq_df <- strsplit(c(seq_host, seq_integration, seq_hpv), "") %>% do.call(rbind, .) %>% as.data.frame()
         seq_df <- strsplit(c(seq_host, seq_integration, seq_hpv), "")
         seq_df <- do.call(rbind, seq_df) |> as.data.frame()
         
@@ -91,26 +93,30 @@ add_mh <- function(result_rel, unite = TRUE) {
 #'
 #' @param result_rel SurVirus result (result of get_seq())
 #' @param len flanking region size
-#' @param unite If TRUE, calculate the lengths of each microsome separately, otherwise calculate the sum of microsome lengths
+#' @param unite If TRUE, calculate the lengths of each microsome separately, 
+#' otherwise calculate the sum of microsome lengths
 #'
 #' @return dataframe
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' SurVirus_dir <- "SurVirus_result"
-#' bam_dir <- "SurVirus_result/readsx"
+#' data(BSgenomehpv16)
+#' SurVirus_dir <- system.file(file.path("extdata", "survirus_result"), 
+#'     package = "mhAnalysis")
+#' bam_dir <- file.path(SurVirus_dir, "readsx")
 #'
-#' result_t1 <- fread(file.path(SurVirus_dir, "results.t1.txt"), sep = " ", header = FALSE, fill = TRUE)
-#' results <- fread(file.path(SurVirus_dir, "results.txt"), sep = " ", header = FALSE, fill = TRUE)
-#' class(results) <- class(result_t1) <- "data.frame"
+#' result_t1 <- read.table(file.path(SurVirus_dir, "results.t1.txt"), sep = " ", 
+#'     header = FALSE, fill = TRUE)
+#' results <- read.table(file.path(SurVirus_dir, "results.txt"), sep = " ", 
+#'     header = FALSE, fill = TRUE)
 #' rownames(results) <- paste("ID", results[, 1], sep = "=")
 #' results <- results[result_t1[, 1], ]
-#' result_rel <- add_strand(results)
-#' result_rel <- get_real_loc(result_rel)
-#' result_rel <- get_seq(result_rel)
+#' result_rel <- add_strand(results, bam_dir, result_t1)
+#' result_rel <- get_real_loc(result_rel, BSgenome_host=BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38, 
+#'     BSgenome_virus=BSgenomehpv16)
+#' result_rel <- get_seq(result_rel, len = 10, BSgenome_host=BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38, 
+#'     BSgenome_virus=BSgenomehpv16)
 #' result_rel <- add_mh_flank(result_rel, len = 5)
-#' }
 add_mh_flank <- function(result_rel, len, unite = TRUE) {
     result_rel$mh <- rep(0, nrow(result_rel))
     for (i in seq_len(nrow(result_rel))) {
@@ -118,7 +124,6 @@ add_mh_flank <- function(result_rel, len, unite = TRUE) {
         seq_host <- result_rel[i, "seq_host40"]
         seq_hpv <- result_rel[i, "seq_hpv40"]
         seq_integration <- paste0(result_rel[i, "seq_host"], result_rel[i, "seq_hpv"])
-        # seq_df <- strsplit(c(seq_host, seq_integration, seq_hpv), "") %>% do.call(rbind, .) %>% as.data.frame()
         seq_df <- strsplit(c(seq_host, seq_integration, seq_hpv), "")
         seq_df <- do.call(rbind, seq_df) |> as.data.frame()
         seqs <- c(1,2,3,4,5)

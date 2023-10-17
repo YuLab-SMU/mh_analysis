@@ -10,7 +10,8 @@ get_mh(seq_df, unite = TRUE)
 \item{seq_df}{a dataframe of three rows, each containing the host sequence,
 integration sequence, and virus sequence}
 
-\item{unite}{If TRUE, calculate the lengths of each microsome separately, otherwise calculate the sum of microsome lengths}
+\item{unite}{If TRUE, calculate the lengths of each microsome separately, 
+otherwise calculate the sum of microsome lengths}
 }
 \value{
 a numeric of mh length

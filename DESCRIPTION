@@ -1,7 +1,7 @@
 Package: mhAnalysis
 Type: Package
 Title: microhomology analysis of SurVirus result
-Version: 0.1.0
+Version: 0.99.0
 Authors@R: c(
       person(given = "Erqiang", family = "Hu", email = "13766876214@163.com", role  = c("aut", "cre"), comment = c(ORCID = "0000-0002-1798-7513")),
       person("Shanye", "Yin", email = "shanye.yin@einsteinmed.edu ", role = c("aut", "ctb"))
@@ -19,6 +19,9 @@ Imports:
     GenomicAlignments,
     stats
 Suggests: 
+    BSgenome.Hsapiens.UCSC.hg38,
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+Depends: 
+    R (>= 2.10)

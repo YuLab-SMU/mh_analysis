@@ -67,18 +67,22 @@ get_rev <- function(x) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' SurVirus_dir <- "SurVirus_result"
-#' bam_dir <- "SurVirus_result/readsx"
+#' data(BSgenomehpv16)
+#' SurVirus_dir <- system.file(file.path("extdata", "survirus_result"), 
+#'     package = "mhAnalysis")
+#' bam_dir <- file.path(SurVirus_dir, "readsx")
 #'
-#' result_t1 <- fread(file.path(SurVirus_dir, "results.t1.txt"), sep = " ", header = FALSE, fill = TRUE)
-#' results <- fread(file.path(SurVirus_dir, "results.txt"), sep = " ", header = FALSE, fill = TRUE)
-#' class(results) <- class(result_t1) <- "data.frame"
+#' result_t1 <- read.table(file.path(SurVirus_dir, "results.t1.txt"), sep = " ", 
+#'     header = FALSE, fill = TRUE)
+#' results <- read.table(file.path(SurVirus_dir, "results.txt"), sep = " ", 
+#'     header = FALSE, fill = TRUE)
 #' rownames(results) <- paste("ID", results[, 1], sep = "=")
 #' results <- results[result_t1[, 1], ]
-#' result_rel <- add_strand(results, result_t1, result)
-#' result_rel <- get_real_loc(result_rel)
-#' }
+#' result_rel <- add_strand(results, bam_dir, result_t1)
+#' result_rel <- get_real_loc(result_rel, BSgenome_host=BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38, 
+#'     BSgenome_virus=BSgenomehpv16)
+#' result_rel <- get_seq(result_rel, len = 10, BSgenome_host=BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38, 
+#'     BSgenome_virus=BSgenomehpv16)
 add_strand <- function(results, bam_dir, result_t1) {
     `.` <- NULL
     result_rel <- data.frame(loc_host = result_t1[, 2],
@@ -167,18 +171,20 @@ add_strand <- function(results, bam_dir, result_t1) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' SurVirus_dir <- "SurVirus_result"
-#' bam_dir <- "SurVirus_result/readsx"
+#' data(BSgenomehpv16)
+#' SurVirus_dir <- system.file(file.path("extdata", "survirus_result"), 
+#'     package = "mhAnalysis")
+#' bam_dir <- file.path(SurVirus_dir, "readsx")
 #'
-#' result_t1 <- fread(file.path(SurVirus_dir, "results.t1.txt"), sep = " ", header = FALSE, fill = TRUE)
-#' results <- fread(file.path(SurVirus_dir, "results.txt"), sep = " ", header = FALSE, fill = TRUE)
-#' class(results) <- class(result_t1) <- "data.frame"
+#' result_t1 <- read.table(file.path(SurVirus_dir, "results.t1.txt"), sep = " ", 
+#'     header = FALSE, fill = TRUE)
+#' results <- read.table(file.path(SurVirus_dir, "results.txt"), sep = " ", 
+#'     header = FALSE, fill = TRUE)
 #' rownames(results) <- paste("ID", results[, 1], sep = "=")
 #' results <- results[result_t1[, 1], ]
-#' result_rel <- add_strand(results)
-#' result_rel <- get_real_loc(result_rel)
-#' }
+#' result_rel <- add_strand(results, bam_dir, result_t1)
+#' result_rel <- get_real_loc(result_rel, BSgenome_host=BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38, 
+#'     BSgenome_virus=BSgenomehpv16)
 get_real_loc <- function(result_rel, BSgenome_host,BSgenome_virus) {
     hostloc_start <- which(result_rel$start_host == result_rel$loc_host)
     hostloc_end <- which(result_rel$end_host == result_rel$loc_host)
@@ -196,8 +202,10 @@ get_real_loc <- function(result_rel, BSgenome_host,BSgenome_virus) {
 
     for (i in 1:nrow(result_rel)) {
         
-        seq_host <- getSeq(BSgenome_host, result_rel$chr[i], start = result_rel$start_host[i], end = result_rel$end_host[i]) |> as.character()
-        seq_hpv <- getSeq(BSgenome_virus, "NC_001526.2", start = result_rel$start_hpv[i], end = result_rel$end_hpv[i]) |> as.character()
+        seq_host <- getSeq(BSgenome_host, result_rel$chr[i], start = result_rel$start_host[i], 
+            end = result_rel$end_host[i]) |> as.character()
+        seq_hpv <- getSeq(BSgenome_virus, "NC_001526.2", start = result_rel$start_hpv[i], 
+            end = result_rel$end_hpv[i]) |> as.character()
         if (result_rel$strand_host[i] == "-") seq_host <- get_comple(seq_host)
         if (result_rel$strand_hpv[i] == "-") seq_hpv <- get_comple(seq_hpv)
         result_rel$seq_host[i] <- seq_host
@@ -229,9 +237,11 @@ get_real_loc <- function(result_rel, BSgenome_host,BSgenome_virus) {
     result_rel$ins_mh <- ins_mh
 
   
-    result_rel[hpvloc_start, "start_hpv"] <- result_rel[hpvloc_start, "start_hpv"] + result_rel[hpvloc_start, "ins_mh"]
+    result_rel[hpvloc_start, "start_hpv"] <- result_rel[hpvloc_start, "start_hpv"] + 
+        result_rel[hpvloc_start, "ins_mh"]
     result_rel[hpvloc_start, "end_hpv"] <- result_rel[hpvloc_start, "start_hpv"] + 19
-    result_rel[hpvloc_end, "end_hpv"] <- result_rel[hpvloc_end, "end_hpv"] - result_rel[hpvloc_end, "ins_mh"]
+    result_rel[hpvloc_end, "end_hpv"] <- result_rel[hpvloc_end, "end_hpv"] - 
+        result_rel[hpvloc_end, "ins_mh"]
     result_rel[hpvloc_end, "start_hpv"] <- result_rel[hpvloc_end, "end_hpv"] - 19
 
     result_rel[hpvloc_start, "loc_hpv"] <- result_rel[hpvloc_start, "start_hpv"]
@@ -255,20 +265,20 @@ get_real_loc <- function(result_rel, BSgenome_host,BSgenome_virus) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' SurVirus_dir <- "SurVirus_result"
-#' bam_dir <- "SurVirus_result/readsx"
+#' data(BSgenomehpv16)
+#' SurVirus_dir <- system.file(file.path("extdata", "survirus_result"), package = "mhAnalysis")
+#' bam_dir <- file.path(SurVirus_dir, "readsx")
 #'
-#' result_t1 <- fread(file.path(SurVirus_dir, "results.t1.txt"), sep = " ", header = FALSE, fill = TRUE)
-#' results <- fread(file.path(SurVirus_dir, "results.txt"), sep = " ", header = FALSE, fill = TRUE)
-#' class(results) <- class(result_t1) <- "data.frame"
+#' result_t1 <- read.table(file.path(SurVirus_dir, "results.t1.txt"), sep = " ", header = FALSE, fill = TRUE)
+#' results <- read.table(file.path(SurVirus_dir, "results.txt"), sep = " ", header = FALSE, fill = TRUE)
 #' rownames(results) <- paste("ID", results[, 1], sep = "=")
 #' results <- results[result_t1[, 1], ]
-#' result_rel <- add_strand(results)
-#' result_rel <- get_real_loc(result_rel)
-#' result_rel <- get_seq(result_rel)
-#' }
-get_seq <- function(result_rel, len, BSgenome_host, BSgenome_virus) {
+#' result_rel <- add_strand(results, bam_dir, result_t1)
+#' result_rel <- get_real_loc(result_rel, BSgenome_host=BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38, 
+#'     BSgenome_virus=BSgenomehpv16)
+#' result_rel <- get_seq(result_rel, len = 10, BSgenome_host=BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38, 
+#'     BSgenome_virus=BSgenomehpv16)
+get_seq <- function(result_rel, len = 10, BSgenome_host, BSgenome_virus) {
     # 根据len重新修改start和end
     hostloc_start <- which(result_rel$start_host == result_rel$loc_host) # host -
     result_rel[hostloc_start, "end_host"] <- result_rel[hostloc_start, "start_host"] + (len-1)
@@ -302,13 +312,17 @@ get_seq <- function(result_rel, len, BSgenome_host, BSgenome_virus) {
     result_rel$seq_host <- result_rel$seq_host40 <- result_rel$seq_hpv <- result_rel$seq_hpv40 <- rep("1", nrow(result_rel))
     for (i in 1:nrow(result_rel)) {
         # 根据截断点，找到宿主和病毒序列
-        seq_host <- getSeq(BSgenome_host, result_rel$chr[i], start = result_rel$start_host[i], end = result_rel$end_host[i]) |> as.character()
-        seq_hpv <- getSeq(BSgenome_virus, "NC_001526.2", start = result_rel$start_hpv[i], end = result_rel$end_hpv[i]) |> as.character()
+        seq_host <- getSeq(BSgenome_host, result_rel$chr[i], start = result_rel$start_host[i], 
+            end = result_rel$end_host[i]) |> as.character()
+        seq_hpv <- getSeq(BSgenome_virus, "NC_001526.2", start = result_rel$start_hpv[i], 
+            end = result_rel$end_hpv[i]) |> as.character()
         if (result_rel$strand_host[i] == "-") seq_host <- get_comple(seq_host)
         if (result_rel$strand_hpv[i] == "-") seq_hpv <- get_comple(seq_hpv)
 
-        seq_host40 <- getSeq(BSgenome_host, result_rel$chr[i], start = result_rel$start_host40[i], end = result_rel$end_host40[i]) |> as.character()
-        seq_hpv40 <- getSeq(BSgenome_virus, "NC_001526.2", start = result_rel$start_hpv40[i], end = result_rel$end_hpv40[i]) |> as.character()
+        seq_host40 <- getSeq(BSgenome_host, result_rel$chr[i], start = result_rel$start_host40[i], 
+            end = result_rel$end_host40[i]) |> as.character()
+        seq_hpv40 <- getSeq(BSgenome_virus, "NC_001526.2", start = result_rel$start_hpv40[i], 
+            end = result_rel$end_hpv40[i]) |> as.character()
         if (result_rel$strand_host[i] == "-") seq_host40 <- get_comple(seq_host40)
         if (result_rel$strand_hpv[i] == "-") seq_hpv40 <- get_comple(seq_hpv40)
         result_rel$seq_host[i] <- seq_host
