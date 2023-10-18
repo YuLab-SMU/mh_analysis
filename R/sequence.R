@@ -9,7 +9,7 @@
 #' get_r(c(68,74))
 get_r <- function(y) {
     result <- rep("read2", length(y))
-    for (i in 1:length(y)) {
+    for (i in seq_len(length(y))) {
         x <- y[i]
         aa <- as.numeric(intToBits(x))
         cc <- rep(0, length(aa))
@@ -106,7 +106,7 @@ add_strand <- function(results, bam_dir, result_t1) {
         # aa$strand <- get_zf(aa$flag)
         tt <- table(aa$seqnames) |> as.data.frame()
         tt <- tt[order(tt$Freq, decreasing = TRUE), ]
-        chrs <- tt[1:2, 1] |> as.character()
+        chrs <- tt[seq_len(2), 1] |> as.character()
         host_chr <- chrs[grep("chr", chrs)]
         hpv_chr <- chrs[grep("NC", chrs)]
 
@@ -200,7 +200,7 @@ get_real_loc <- function(result_rel, BSgenome_host,BSgenome_virus) {
 
 
 
-    for (i in 1:nrow(result_rel)) {
+    for (i in seq_len(nrow(result_rel))) {
         
         seq_host <- getSeq(BSgenome_host, result_rel$chr[i], start = result_rel$start_host[i], 
             end = result_rel$end_host[i]) |> as.character()
@@ -300,8 +300,8 @@ get_seq <- function(result_rel, len = 10, BSgenome_host, BSgenome_virus) {
     result_rel[hpvloc_end, "start_hpv"] <- result_rel[hpvloc_end, "end_hpv"] - (len-1)
     result_rel[hpvloc_end, "start_hpv40"] <- result_rel[hpvloc_end, "end_hpv"] - (len-1)
     result_rel[hpvloc_end, "end_hpv40"] <- result_rel[hpvloc_end, "end_hpv"] + len
-    # len不能太离谱而导致跳出基因组范围外。
-    for (i in 1:nrow(result_rel)) {
+
+    for (i in seq_len(nrow(result_rel))) {
         result_rel$start_hpv[i] <- max(1, result_rel$start_hpv[i])
         result_rel$start_hpv40[i] <- max(1, result_rel$start_hpv40[i])
         result_rel$end_hpv[i] <- min(7905, result_rel$end_hpv[i])
@@ -310,8 +310,8 @@ get_seq <- function(result_rel, len = 10, BSgenome_host, BSgenome_virus) {
 
 
     result_rel$seq_host <- result_rel$seq_host40 <- result_rel$seq_hpv <- result_rel$seq_hpv40 <- rep("1", nrow(result_rel))
-    for (i in 1:nrow(result_rel)) {
-        # 根据截断点，找到宿主和病毒序列
+    for (i in seq_len(nrow(result_rel))) {
+      
         seq_host <- getSeq(BSgenome_host, result_rel$chr[i], start = result_rel$start_host[i], 
             end = result_rel$end_host[i]) |> as.character()
         seq_hpv <- getSeq(BSgenome_virus, "NC_001526.2", start = result_rel$start_hpv[i], 

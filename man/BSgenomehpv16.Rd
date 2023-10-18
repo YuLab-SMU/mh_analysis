@@ -10,6 +10,9 @@ A BSgenome
 \usage{
 BSgenomehpv16
 }
+\value{
+A BSgenome object of HPV16
+}
 \description{
 Full genomic sequences for HPV16
 }

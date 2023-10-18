@@ -7,9 +7,18 @@ Authors@R: c(
       person("Shanye", "Yin", email = "shanye.yin@einsteinmed.edu ", role = c("aut", "ctb"))
       )
 Description: A series of analyses of the results of the survey software, including micro homology analysis, etc.
+    A significant proportion of human cancers result from the integration of viruses
+    into the human genome. Therefore, investigating the mechanisms of viral 
+    integration is crucial for understanding the underlying mechanisms of many 
+    devastating diseases. Microhomology (MH) analysis at viral integration sites 
+    plays a critical role in the study of viral integration mechanisms. 
+    Previous research has shown a significant enrichment of microhomology (MH) 
+    between the human genome and the human papillomavirus (HPV) genome at 
+    integration breakpoints or nearby regions. To facilitate MH analysis, we have 
+    developed the mhAnalysis software package.
 License: Artistic-2.0
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 RoxygenNote: 7.2.3
 Imports: 
     BSgenome,
@@ -21,7 +30,10 @@ Imports:
 Suggests: 
     BSgenome.Hsapiens.UCSC.hg38,
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Depends: 
-    R (>= 2.10)
+    R (>= 4.3.0)
+biocViews: Metagenomics, Software, Sequencing
+Config/testthat/edition: 3

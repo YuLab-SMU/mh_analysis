@@ -26,14 +26,16 @@ get_mh <- function(seq_df, unite = TRUE) {
     aa2 <- seq_df[3, ] - seq_df[2, ]
     aa <- abs(aa1) + abs(aa2)
     aa <- as.numeric(aa)
-    # 统计两个以上连续0的数量
-    bb <- aa[2:length(aa)] + aa[1:(length(aa)-1)]
+    # Count the number of more than two consecutive zeros
+    bb <- aa[2:length(aa)] + aa[seq_len(length(aa)-1)]
     bb <- c(1, as.numeric(bb))
-    # 将含有0的都改成非零, 最大是16, 全改成9，为一位，不影响后续分析，保持位数不变
+    # Change all the ones containing 0 to non-zero, the maximum is 16, 
+    # all to 9, to one, which does not affect the follow-up analysis and 
+    # keeps the number of digits unchanged.
     bb[bb >9 ] <- 9
 
-    # 将0的左右两边都是非零的当作一坨
-    # 将连续的多个0替换成一个0，就可以得到坨数
+    # Treat both the left and right sides of 0 as a lump.
+    # The number of dunes can be obtained by replacing consecutive zeros with one zero.
     cc <- paste(bb, collapse = "")
     if (unite) {
         cc <- strsplit(cc, split = "[1-9]+") |> unlist() |> nchar()
@@ -135,14 +137,14 @@ add_mh_flank <- function(result_rel, len, unite = TRUE) {
         aa2 <- seq_df[3, ] - seq_df[2, ]
         aa <- abs(aa1) + abs(aa2)
         aa <- as.numeric(aa)
-        # 统计两个以上连续0的数量
-        bb <- aa[2:length(aa)] + aa[1:(length(aa)-1)]
+        # Count the number of more than two consecutive zeros
+        bb <- aa[2:length(aa)] + aa[seq_len(length(aa)-1)]
         bb <- c(1, as.numeric(bb))
 
         # flank size = 5
 
         cc <- aa[(length(aa) / 2 - n1 + 1): (length(aa)/2 + n2)]
-        # 从中心flank往两侧延申，
+        # Extend from the central flank to both sides
 
         while(cc[1] == 0 || cc[length(cc)] == 0) {
             if (cc[1] == 0) n1 <- n1 + 1
