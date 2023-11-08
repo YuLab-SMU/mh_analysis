@@ -201,15 +201,19 @@ get_real_loc <- function(result_rel, BSgenome_host,BSgenome_virus) {
 
 
     for (i in seq_len(nrow(result_rel))) {
-        
-        seq_host <- getSeq(BSgenome_host, result_rel$chr[i], start = result_rel$start_host[i], 
-            end = result_rel$end_host[i]) |> as.character()
-        seq_hpv <- getSeq(BSgenome_virus, "NC_001526.2", start = result_rel$start_hpv[i], 
-            end = result_rel$end_hpv[i]) |> as.character()
-        if (result_rel$strand_host[i] == "-") seq_host <- get_comple(seq_host)
-        if (result_rel$strand_hpv[i] == "-") seq_hpv <- get_comple(seq_hpv)
-        result_rel$seq_host[i] <- seq_host
-        result_rel$seq_hpv[i] <- seq_hpv
+        tryCatch({
+            seq_host <- getSeq(BSgenome_host, result_rel$chr[i], start = result_rel$start_host[i], 
+                end = result_rel$end_host[i]) |> as.character()
+            seq_hpv <- getSeq(BSgenome_virus, "NC_001526.2", start = result_rel$start_hpv[i], 
+                end = result_rel$end_hpv[i]) |> as.character()
+            if (result_rel$strand_host[i] == "-") seq_host <- get_comple(seq_host)
+            if (result_rel$strand_hpv[i] == "-") seq_hpv <- get_comple(seq_hpv)
+            result_rel$seq_host[i] <- seq_host
+            result_rel$seq_hpv[i] <- seq_hpv
+        }, error = function(e){}
+
+        )
+
     }
 
 
