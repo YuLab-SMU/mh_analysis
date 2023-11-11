@@ -98,6 +98,8 @@ add_strand <- function(results, bam_dir, result_t1) {
                       what=c("qual", "flag"))
     for (i in seq_len(nrow(results))) {
         filename <- file.path(bam_dir, paste0(results[i, 1], ".bam"))
+        if (!paste0(results[i, 1], ".bam") %in% list.files(bam_dir)) next
+     
         bamFile <- readGAlignments(filename, param=param, use.names = TRUE) |> as.data.frame()
         bamFile$ID <- gsub("\\..*", "", rownames(bamFile))
 
